@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexo — Red de Confianza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════
+   TOKENS
+═══════════════════════════ */
+:root {
+  --cream:      #faf7f1;
+  --parchment:  #f2ece0;
+  --parchment2: #e8dfc9;
+  --white:      #ffffff;
+  --ink:        #0e0f12;
+  --ink2:       #1a1c22;
+  --charcoal:   #2c2e38;
+  --gold:       #c9963a;
+  --gold2:      #ddb055;
+  --gold3:      #eecc80;
+  --goldpale:   #f7ecd4;
+  --copper:     #a85c28;
+  --slate:      #4a5068;
+  --silver:     #8a94a6;
+  --muted:      #7a7d8a;
+  --mutedlight: #a8acb8;
+  --border:     rgba(14,15,18,0.1);
+  --bordergold: rgba(201,150,58,0.3);
+  --shadow-sm:  0 2px 12px rgba(14,15,18,0.06);
+  --shadow-md:  0 8px 40px rgba(14,15,18,0.1);
+  --shadow-lg:  0 20px 80px rgba(14,15,18,0.14);
+  --r:          10px;
+}
+
+/* ═══════════════════════════
+   BASE
+═══════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a { text-decoration:none; color:inherit; }
+
+/* ═══════════════════════════
+   LAYOUT
+═══════════════════════════ */
+.wrap { max-width:1100px; margin:0 auto; padding:0 48px; }
+
+/* ═══════════════════════════
+   NAVBAR
+═══════════════════════════ */
+#nav {
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  padding:20px 0;
+  transition:all .35s ease;
+}
+#nav.scrolled {
+  background:rgba(250,247,241,0.92);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  padding:14px 0;
+  box-shadow:var(--shadow-sm);
+}
+.nav-row {
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+/* NEXO LOGOTYPE */
+.nexo-logo { display:flex; align-items:center; gap:12px; }
+.nexo-mark { width:38px; height:38px; flex-shrink:0; }
+.nexo-text { display:flex; flex-direction:column; line-height:1; }
+.nexo-name {
+  font-family:'Cormorant',serif;
+  font-size:1.65rem; font-weight:700;
+  letter-spacing:0.14em; color:var(--ink);
+}
+.nexo-name span { color:var(--gold); }
+.nexo-tagline {
+  font-size:0.52rem; font-weight:500;
+  letter-spacing:0.22em; text-transform:uppercase;
+  color:var(--silver); margin-top:2px;
+}
+
+.nav-links {
+  display:flex; align-items:center; gap:4px;
+}
+.nav-links a {
+  font-size:0.8rem; font-weight:400;
+  color:var(--silver); padding:7px 15px;
+  border-radius:100px; letter-spacing:0.02em;
+  transition:color .2s;
+}
+.nav-links a:hover { color:var(--ink); }
+.nav-cta {
+  padding:10px 24px; border-radius:4px;
+  background:var(--ink); color:var(--white);
+  font-size:0.78rem; font-weight:600;
+  letter-spacing:0.06em; text-transform:uppercase;
+  border:none; cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.nav-cta:hover { background:var(--charcoal); transform:translateY(-1px); }
+
+.hamburger {
+  display:none; flex-direction:column;
+  gap:5px; cursor:pointer; padding:6px;
+}
+.hamburger span {
+  width:22px; height:1.5px;
+  background:var(--ink); border-radius:2px;
+  transition:all .3s;
+}
+
+/* MOBILE MENU */
+.mob-menu {
+  display:none; position:fixed; inset:0;
+  background:var(--cream); z-index:950;
+  flex-direction:column; align-items:center;
+  justify-content:center; gap:36px;
+}
+.mob-menu.open { display:flex; }
+.mob-menu a {
+  font-family:'Cormorant',serif;
+  font-size:2.2rem; font-weight:400;
+  color:var(--ink); transition:color .2s;
+}
+.mob-menu a:hover { color:var(--gold); }
+.mob-close {
+  position:absolute; top:24px; right:28px;
+  font-size:1.3rem; color:var(--silver);
+  cursor:pointer; padding:8px;
+}
+
+/* ═══════════════════════════
+   HERO
+═══════════════════════════ */
+#hero {
+  background:var(--cream);
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+}
+
+/* Subtle grid lines */
+#hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 40%, black 0%, transparent 80%);
+  pointer-events:none;
+}
+
+.hero-content {
+  flex:1; display:flex;
+  align-items:center; gap:60px;
+  padding:130px 0 80px;
+  position:relative; z-index:1;
+}
+.hero-left { flex:1; }
+
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:0.68rem; font-weight:600;
+  letter-spacing:0.22em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:28px;
+  opacity:0; animation:slideUp .7s .1s ease forwards;
+}
+.hero-eyebrow::before {
+  content:''; width:28px; height:1px;
+  background:var(--gold); flex-shrink:0;
+}
+
+.hero-h1 {
+  font-family:'Cormorant',serif;
+  font-size:clamp(3rem,5.5vw,5.2rem);
+  font-weight:300; line-height:1.06;
+  letter-spacing:-0.01em; color:var(--ink);
+  margin-bottom:14px;
+  opacity:0; animation:slideUp .7s .2s ease forwards;
+}
+.hero-h1 em { font-style:italic; color:var(--gold); }
+.hero-h1 strong { font-weight:700; display:block; }
+
+.hero-rule {
+  width:52px; height:1px;
+  background:linear-gradient(90deg, var(--gold), transparent);
+  margin:28px 0;
+  opacity:0; animation:slideUp .5s .3s ease forwards;
+}
+
+.hero-desc {
+  font-size:1.05rem; font-weight:300;
+  line-height:1.8; color:var(--slate);
+  max-width:480px; margin-bottom:44px;
+  opacity:0; animation:slideUp .7s .35s ease forwards;
+}
+.hero-desc strong { color:var(--ink); font-weight:500; }
+
+.hero-btns {
+  display:flex; gap:12px; flex-wrap:wrap;
+  opacity:0; animation:slideUp .7s .45s ease forwards;
+}
+.btn-dark {
+  padding:14px 32px; border-radius:4px;
+  background:var(--ink); color:var(--white);
+  font-size:0.82rem; font-weight:600;
+  letter-spacing:0.08em; text-transform:uppercase;
+  border:none; cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.btn-dark:hover { background:var(--charcoal); transform:translateY(-1px); }
+.btn-gold-outline {
+  padding:14px 32px; border-radius:4px;
+  background:transparent; color:var(--gold);
+  font-size:0.82rem; font-weight:500;
+  letter-spacing:0.06em; text-transform:uppercase;
+  border:1.5px solid var(--bordergold); cursor:pointer;
+  transition:all .2s;
+}
+.btn-gold-outline:hover {
+  background:var(--goldpale); color:var(--copper);
+  border-color:rgba(201,150,58,0.5);
+}
+
+/* HERO NETWORK */
+.hero-right {
+  flex:0 0 460px;
+  opacity:0; animation:fadeIn 1.2s .5s ease forwards;
+}
+
+/* STATS */
+.hero-stats {
+  position:relative; z-index:1;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);
+  opacity:0; animation:slideUp .7s .6s ease forwards;
+}
+.hstat {
+  padding:28px 32px;
+  border-right:1px solid var(--border);
+}
+.hstat:last-child { border-right:none; }
+.hstat-n {
+  font-family:'Cormorant',serif;
+  font-size:2.4rem; font-weight:700;
+  color:var(--gold); line-height:1; margin-bottom:4px;
+}
+.hstat-l {
+  font-size:0.72rem; font-weight:500;
+  color:var(--silver); letter-spacing:0.04em;
+}
+
+/* ═══════════════════════════
+   SHARED SECTION STYLE
+═══════════════════════════ */
+.sec { padding:100px 0; }
+.sec-light { background:var(--cream); }
+.sec-parchment { background:var(--parchment); }
+.sec-white { background:var(--white); }
+.sec-ink { background:var(--ink); }
+.sec-ink2 { background:var(--ink2); }
+
+.sec-label {
+  font-size:0.67rem; font-weight:700;
+  letter-spacing:0.24em; text-transform:uppercase;
+  color:var(--gold); display:flex; align-items:center; gap:10px;
+  margin-bottom:20px;
+}
+.sec-label::before { content:''; width:26px; height:1px; background:var(--gold); }
+.sec-label.on-dark { color:var(--gold2); }
+.sec-label.on-dark::before { background:var(--gold2); }
+
+h2.disp {
+  font-family:'Cormorant',serif;
+  font-size:clamp(2rem,4vw,3.4rem);
+  font-weight:300; line-height:1.12;
+  letter-spacing:-0.01em;
+}
+h2.disp em { font-style:italic; color:var(--gold); }
+h2.disp strong { font-weight:700; display:block; }
+h2.disp.on-dark { color:var(--white); }
+h2.disp.on-dark em { color:var(--gold2); }
+
+/* ═══════════════════════════
+   HOW IT WORKS
+═══════════════════════════ */
+#como { background:var(--cream); }
+
+.como-intro { margin-bottom:64px; max-width:640px; }
+.como-intro p {
+  font-size:1rem; font-weight:300;
+  color:var(--slate); line-height:1.8; margin-top:18px;
+}
+.como-intro p strong { color:var(--ink); font-weight:500; }
+
+.como-layout {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:64px; align-items:start;
+}
+
+/* STEPS */
+.steps { display:flex; flex-direction:column; }
+.step {
+  display:flex; gap:20px;
+  padding:22px 0; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:all .2s;
+  position:relative;
+}
+.step:last-child { border-bottom:none; }
+.step::before {
+  content:''; position:absolute; left:-20px; top:0; bottom:0;
+  width:2px; background:var(--gold);
+  transform:scaleY(0); transform-origin:top;
+  transition:transform .3s ease;
+}
+.step.active::before { transform:scaleY(1); }
+.step-num {
+  width:38px; height:38px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cormorant',serif;
+  font-size:1rem; font-weight:700;
+  flex-shrink:0; transition:all .3s;
+  background:var(--parchment); color:var(--muted);
+  border:1.5px solid var(--border);
+}
+.step.active .step-num {
+  background:var(--gold); color:var(--white);
+  border-color:var(--gold);
+  box-shadow:0 4px 16px rgba(201,150,58,0.3);
+}
+.step-body { flex:1; }
+.step-title {
+  font-size:0.92rem; font-weight:600;
+  color:var(--charcoal); margin-bottom:6px;
+  transition:color .2s;
+}
+.step.active .step-title { color:var(--ink); }
+.step-desc {
+  font-size:0.8rem; color:var(--silver);
+  line-height:1.65; font-weight:300;
+  max-height:0; overflow:hidden;
+  transition:max-height .3s ease, opacity .3s ease;
+  opacity:0;
+}
+.step.active .step-desc { max-height:100px; opacity:1; }
+
+/* TREE PANEL */
+.tree-panel {
+  background:var(--white);
+  border-radius:16px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+  padding:8px;
+}
+#tree-svg { width:100%; height:420px; }
+
+/* PILLAR CARDS below tree section */
+.pillars-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:20px; margin-top:56px;
+}
+.pillar {
+  background:var(--white); border-radius:12px;
+  padding:28px 24px; border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  transition:transform .2s, box-shadow .2s;
+  position:relative; overflow:hidden;
+}
+.pillar::before {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--gold3));
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .35s ease;
+}
+.pillar:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); }
+.pillar:hover::before { transform:scaleX(1); }
+.pillar-ico { font-size:1.7rem; margin-bottom:14px; display:block; }
+.pillar-title { font-size:0.9rem; font-weight:700; margin-bottom:8px; }
+.pillar-text { font-size:0.8rem; color:var(--slate); line-height:1.65; font-weight:300; }
+
+/* ═══════════════════════════
+   NETWORK VISUAL (hero)
+═══════════════════════════ */
+/* animated dashed edges */
+.e-flow {
+  stroke-dasharray:5 4;
+  animation:dashFlow 2s linear infinite;
+}
+@keyframes dashFlow { to { stroke-dashoffset:-18; } }
+
+/* pulsing halo */
+.halo {
+  animation:haloPulse 2.8s ease-out infinite;
+  transform-box:fill-box; transform-origin:center;
+}
+@keyframes haloPulse {
+  0%  { opacity:.4; transform:scale(1); }
+  100%{ opacity:0; transform:scale(3); }
+}
+
+/* ═══════════════════════════
+   TRUST LEVELS
+═══════════════════════════ */
+#niveles { background:var(--parchment); }
+
+.niveles-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:20px; margin-top:52px;
+}
+.nivel {
+  background:var(--white); border-radius:14px;
+  padding:32px 28px; border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  position:relative; overflow:hidden;
+  transition:transform .2s, box-shadow .2s;
+}
+.nivel:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.nivel-stripe {
+  position:absolute; top:0; left:0; right:0; height:3px;
+}
+.nivel.n1 .nivel-stripe { background:linear-gradient(90deg,#b8860b,var(--gold3)); }
+.nivel.n2 .nivel-stripe { background:linear-gradient(90deg,#6b7a8d,#a8b4c8); }
+.nivel.n3 .nivel-stripe { background:linear-gradient(90deg,#8b4513,#c8896a); }
+
+.nivel-chip {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:0.68rem; font-weight:700;
+  letter-spacing:0.12em; text-transform:uppercase;
+  padding:4px 12px; border-radius:100px;
+  margin-bottom:18px;
+}
+.nivel.n1 .nivel-chip { background:rgba(184,134,11,0.1); color:#8b6914; }
+.nivel.n2 .nivel-chip { background:rgba(107,122,141,0.1); color:#4a5880; }
+.nivel.n3 .nivel-chip { background:rgba(139,69,19,0.1); color:#8b4513; }
+
+.nivel-title {
+  font-family:'Cormorant',serif;
+  font-size:1.35rem; font-weight:700;
+  color:var(--ink); margin-bottom:10px;
+}
+.nivel-desc {
+  font-size:0.82rem; color:var(--slate);
+  line-height:1.7; margin-bottom:22px; font-weight:300;
+}
+.nivel-reqs { display:flex; flex-direction:column; gap:9px; }
+.nivel-req {
+  display:flex; align-items:flex-start; gap:9px;
+  font-size:0.79rem; color:var(--charcoal);
+}
+.nivel-req-icon { color:var(--gold); font-weight:700; flex-shrink:0; margin-top:1px; }
+
+.nivel-progression {
+  display:flex; align-items:center;
+  justify-content:center; gap:16px;
+  margin-top:44px; flex-wrap:wrap;
+}
+.prog-node {
+  display:flex; flex-direction:column;
+  align-items:center; gap:7px;
+}
+.prog-dot {
+  width:13px; height:13px; border-radius:50%;
+}
+.prog-lbl { font-size:0.7rem; color:var(--muted); font-weight:500; }
+.prog-arr { color:var(--parchment2); font-size:1.1rem; }
+.prog-hint {
+  font-size:0.7rem; color:var(--mutedlight);
+  text-align:center; margin-top:8px; width:100%;
+}
+
+/* ═══════════════════════════
+   CATEGORIES
+═══════════════════════════ */
+#cats { background:var(--cream); }
+
+.cats-header {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:60px; align-items:end; margin-bottom:52px;
+}
+.cats-header p {
+  font-size:0.92rem; font-weight:300;
+  color:var(--slate); line-height:1.8;
+}
+.cats-header p strong { color:var(--ink); font-weight:500; }
+
+.cats-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.cat-card {
+  background:var(--white); border-radius:12px;
+  padding:22px 18px; border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  cursor:pointer; transition:all .2s;
+  position:relative; overflow:hidden;
+}
+.cat-card::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(201,150,58,0.05),transparent);
+  opacity:0; transition:opacity .2s;
+}
+.cat-card:hover { transform:translateY(-2px); border-color:var(--bordergold); box-shadow:var(--shadow-md); }
+.cat-card:hover::after { opacity:1; }
+.cat-card.picked { border-color:var(--bordergold); background:var(--goldpale); }
+.cat-ico { font-size:1.6rem; display:block; margin-bottom:10px; }
+.cat-name { font-size:0.83rem; font-weight:700; color:var(--ink); margin-bottom:3px; }
+.cat-n { font-size:0.72rem; color:var(--silver); }
+.cat-bar { margin-top:10px; height:2.5px; background:var(--parchment2); border-radius:3px; overflow:hidden; }
+.cat-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--gold),var(--gold3)); transition:width 1.1s ease; }
+
+/* ═══════════════════════════
+   MONETIZATION
+═══════════════════════════ */
+#mono { background:var(--ink); }
+
+.mono-gfx {
+  position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,150,58,0.07) 0%, transparent 70%);
+}
+
+.mono-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:20px; margin-top:52px;
+}
+.mono-card {
+  background:rgba(255,255,255,0.04);
+  border-radius:14px; padding:32px 28px;
+  border:1px solid rgba(255,255,255,0.07);
+  position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
+}
+.mono-card:hover { border-color:rgba(201,150,58,0.3); transform:translateY(-3px); }
+.mono-card-stripe {
+  position:absolute; top:0; left:0; right:0; height:2px;
+}
+.mono-card.m1 .mono-card-stripe { background:linear-gradient(90deg,var(--gold),var(--gold3)); }
+.mono-card.m2 .mono-card-stripe { background:linear-gradient(90deg,#4a7fd4,#8ab4f8); }
+.mono-card.m3 .mono-card-stripe { background:linear-gradient(90deg,#2d7a5e,#5ddba8); }
+
+.mono-pct {
+  font-family:'Cormorant',serif;
+  font-size:3.5rem; font-weight:700; line-height:1; margin-bottom:6px;
+}
+.mono-card.m1 .mono-pct { color:var(--gold2); }
+.mono-card.m2 .mono-pct { color:#8ab4f8; }
+.mono-card.m3 .mono-pct { color:#5ddba8; }
+.mono-title { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:10px; }
+.mono-desc { font-size:0.8rem; color:rgba(255,255,255,0.4); line-height:1.65; margin-bottom:18px; font-weight:300; }
+.mono-items { display:flex; flex-direction:column; gap:7px; }
+.mono-item {
+  font-size:0.75rem; color:rgba(255,255,255,0.45);
+  display:flex; gap:8px; align-items:flex-start;
+}
+.mono-item::before { content:'→'; color:var(--gold2); flex-shrink:0; }
+
+/* SWIMLANE */
+.swimlane { margin-top:44px; display:flex; flex-direction:column; gap:3px; }
+.swim-row {
+  display:grid; grid-template-columns:110px 1fr;
+  background:rgba(255,255,255,0.03);
+  border-radius:8px; border:1px solid rgba(255,255,255,0.05);
+  overflow:hidden; transition:border-color .2s;
+}
+.swim-row:hover { border-color:rgba(201,150,58,0.2); }
+.swim-actor {
+  padding:14px 14px; border-right:1px solid rgba(255,255,255,0.05);
+  display:flex; align-items:center;
+  font-size:0.7rem; font-weight:600;
+  color:rgba(255,255,255,0.3);
+  text-transform:uppercase; letter-spacing:0.08em;
+}
+.swim-steps {
+  padding:11px 16px; display:flex;
+  align-items:center; gap:6px; flex-wrap:wrap;
+}
+.swim-step {
+  background:rgba(255,255,255,0.05); border-radius:5px;
+  padding:7px 11px; font-size:0.73rem; font-weight:400;
+  color:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.06);
+  white-space:nowrap;
+}
+.swim-step.hi {
+  background:rgba(201,150,58,0.1);
+  border-color:rgba(201,150,58,0.25);
+  color:var(--gold2);
+}
+.swim-arr { color:rgba(255,255,255,0.2); font-size:0.85rem; flex-shrink:0; }
+
+/* ═══════════════════════════
+   BRAND KIT
+═══════════════════════════ */
+#brand { background:var(--parchment); }
+
+.brand-grid { margin-top:52px; }
+
+/* Logo showcase */
+.logo-showcase {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:16px; margin-bottom:48px;
+}
+.logo-tile {
+  border-radius:14px; padding:40px 32px;
+  display:flex; flex-direction:column;
+  align-items:center; gap:16px;
+  min-height:170px; border:1px solid transparent;
+}
+.lt-dark  { background:var(--ink); }
+.lt-white { background:var(--white); border-color:var(--border); box-shadow:var(--shadow-sm); }
+.lt-gold  { background:var(--gold); }
+.lt-cap {
+  font-size:0.62rem; font-weight:700;
+  letter-spacing:0.14em; text-transform:uppercase;
+}
+.lt-dark .lt-cap  { color:rgba(255,255,255,0.3); }
+.lt-white .lt-cap { color:var(--mutedlight); }
+.lt-gold .lt-cap  { color:rgba(14,15,18,0.45); }
+
+/* Anatomy */
+.anatomy-box {
+  background:var(--white); border-radius:12px;
+  padding:28px 32px; margin-bottom:44px;
+  border:1px solid var(--border); box-shadow:var(--shadow-sm);
+  display:flex; gap:36px; align-items:center; flex-wrap:wrap;
+}
+.anatomy-items {
+  flex:1; display:grid;
+  grid-template-columns:repeat(2,1fr); gap:12px;
+}
+.anatomy-item { font-size:0.8rem; color:var(--slate); line-height:1.6; }
+.anatomy-item strong { color:var(--ink); font-weight:600; }
+
+/* Palette */
+.palette {
+  display:flex; gap:12px; flex-wrap:wrap;
+  margin-bottom:44px;
+}
+.swatch { flex:1; min-width:90px; border-radius:10px; overflow:hidden; box-shadow:var(--shadow-sm); }
+.swatch-color { height:60px; }
+.swatch-info { background:var(--white); padding:10px 12px; }
+.swatch-name { font-size:0.76rem; font-weight:700; color:var(--ink); }
+.swatch-hex { font-size:0.68rem; color:var(--silver); font-family:monospace; }
+
+/* Typography */
+.type-duo {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:20px; margin-bottom:44px;
+}
+.type-card {
+  background:var(--white); border-radius:12px;
+  padding:28px; border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+}
+.type-sample {
+  font-family:'Cormorant',serif;
+  font-size:2.8rem; line-height:1; margin-bottom:12px; color:var(--ink);
+}
+.type-sample.sans { font-family:'DM Sans',sans-serif; font-weight:300; }
+.type-body-sample { font-size:0.88rem; color:var(--silver); line-height:1.6; font-weight:300; }
+.type-meta { font-size:0.65rem; color:var(--mutedlight); letter-spacing:0.12em; text-transform:uppercase; margin-top:10px; }
+
+/* Tone of voice */
+.tone-grid {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:12px; margin-bottom:44px;
+}
+.tone-card {
+  background:var(--white); border-radius:10px;
+  padding:18px 16px; border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+}
+.tone-word {
+  font-family:'Cormorant',serif;
+  font-size:1.45rem; font-weight:600;
+  color:var(--ink); margin-bottom:4px;
+}
+.tone-not { font-size:0.71rem; color:var(--mutedlight); }
+.tone-not span { color:var(--copper); text-decoration:line-through; }
+
+/* Taglines */
+.taglines-box {
+  background:var(--ink); border-radius:14px; padding:44px 52px;
+}
+.tagline-item {
+  font-family:'Cormorant',serif;
+  font-size:clamp(1.3rem,2.8vw,2rem);
+  font-weight:300; line-height:1.25;
+  color:rgba(255,255,255,0.8); padding:22px 0;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  transition:color .2s; cursor:default;
+}
+.tagline-item:last-child { border-bottom:none; padding-bottom:0; }
+.tagline-item:hover { color:var(--gold2); }
+.tagline-item em { font-style:italic; color:var(--gold2); }
+
+/* ═══════════════════════════
+   INVERSORES CTA
+═══════════════════════════ */
+#inversores { background:var(--cream); padding:120px 0; }
+
+.inv-wrap { max-width:780px; margin:0 auto; text-align:center; }
+.inv-stage {
+  font-size:0.68rem; font-weight:700;
+  letter-spacing:0.24em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:28px;
+  display:flex; align-items:center;
+  justify-content:center; gap:12px;
+}
+.inv-stage::before, .inv-stage::after {
+  content:''; width:28px; height:1px; background:var(--gold);
+}
+.inv-h2 {
+  font-family:'Cormorant',serif;
+  font-size:clamp(2.4rem,5vw,4.2rem);
+  font-weight:300; line-height:1.1; color:var(--ink); margin-bottom:24px;
+}
+.inv-h2 em { font-style:italic; color:var(--gold); }
+.inv-desc {
+  font-size:1rem; font-weight:300;
+  color:var(--slate); line-height:1.8; margin-bottom:44px;
+}
+.inv-desc strong { color:var(--ink); font-weight:500; }
+
+.inv-cards {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:16px; margin-bottom:40px; text-align:left;
+}
+.inv-card {
+  background:var(--white); border-radius:12px;
+  padding:24px 20px; border:1px solid var(--border);
+  box-shadow:var(--shadow-sm); transition:all .2s;
+}
+.inv-card:hover { transform:translateY(-3px); border-color:var(--bordergold); box-shadow:var(--shadow-md); }
+.inv-card-ico { font-size:1.5rem; margin-bottom:10px; display:block; }
+.inv-card-title { font-size:0.86rem; font-weight:700; margin-bottom:7px; color:var(--ink); }
+.inv-card-desc { font-size:0.78rem; color:var(--slate); line-height:1.6; font-weight:300; }
+
+.inv-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+.inv-note { font-size:0.74rem; color:var(--mutedlight); }
+
+/* ═══════════════════════════
+   FOOTER
+═══════════════════════════ */
+footer {
+  background:var(--ink);
+  padding:40px 0;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.footer-row {
+  display:flex; align-items:center;
+  justify-content:space-between; flex-wrap:wrap; gap:20px;
+}
+.footer-note {
+  font-size:0.74rem; color:rgba(255,255,255,0.25); line-height:1.6;
+}
+.footer-links { display:flex; gap:24px; }
+.footer-links a {
+  font-size:0.74rem;
+  color:rgba(255,255,255,0.25);
+  transition:color .2s;
+}
+.footer-links a:hover { color:var(--gold2); }
+
+/* ═══════════════════════════
+   ANIMATIONS
+═══════════════════════════ */
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity:0; } to { opacity:1; }
+}
+
+.reveal {
+  opacity:0; transform:translateY(22px);
+  transition:opacity .65s ease, transform .65s ease;
+}
+.reveal.in { opacity:1; transform:none; }
+.reveal.d1 { transition-delay:.08s; }
+.reveal.d2 { transition-delay:.16s; }
+.reveal.d3 { transition-delay:.24s; }
+.reveal.d4 { transition-delay:.32s; }
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media(max-width:1024px){
+  .hero-right { flex:0 0 360px; }
+  .cats-grid { grid-template-columns:repeat(3,1fr); }
+}
+@media(max-width:768px){
+  .wrap { padding:0 22px; }
+  .nav-links, .nav-cta { display:none; }
+  .hamburger { display:flex; }
+  .hero-content { flex-direction:column; padding:100px 0 48px; gap:40px; }
+  .hero-right { flex:none; width:100%; max-width:340px; margin:0 auto; }
+  .hero-stats { grid-template-columns:repeat(2,1fr); }
+  .hstat:nth-child(2) { border-right:none; }
+  .como-layout { grid-template-columns:1fr; }
+  .pillars-grid { grid-template-columns:1fr; }
+  .niveles-grid { grid-template-columns:1fr; }
+  .cats-header { grid-template-columns:1fr; gap:20px; }
+  .cats-grid { grid-template-columns:repeat(2,1fr); }
+  .mono-grid { grid-template-columns:1fr; }
+  .logo-showcase { grid-template-columns:1fr; }
+  .type-duo { grid-template-columns:1fr; }
+  .tone-grid { grid-template-columns:repeat(2,1fr); }
+  .inv-cards { grid-template-columns:1fr; }
+  .taglines-box { padding:28px 24px; }
+  .sec { padding:70px 0; }
+}
+@media(max-width:480px){
+  .cats-grid { grid-template-columns:repeat(2,1fr); }
+  .inv-btns { flex-direction:column; align-items:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav id="nav">
+  <div class="wrap">
+    <div class="nav-row">
+
+      <div class="nexo-logo">
+        <!-- NEXO icon mark -->
+        <svg class="nexo-mark" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- outer orbit -->
+          <circle cx="19" cy="19" r="17" stroke="rgba(201,150,58,0.2)" stroke-width="1.2"/>
+          <!-- accent arc — growth, chain -->
+          <path d="M19 2 A17 17 0 0 1 34.7 26" stroke="#c9963a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <!-- 3 trust nodes -->
+          <circle cx="19" cy="4"   r="3.2" fill="#c9963a"/>
+          <circle cx="4"  cy="28"  r="3.2" fill="#c9963a"/>
+          <circle cx="34" cy="28"  r="3.2" fill="#c9963a"/>
+          <!-- center node -->
+          <circle cx="19" cy="19"  r="4.8" fill="#c9963a"/>
+          <!-- dashed connectors -->
+          <line x1="19" y1="7.2"  x2="19" y2="14.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          <line x1="6.8" y1="25.6" x2="14.8" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          <line x1="31.2" y1="25.6" x2="23.2" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+        </svg>
+        <div class="nexo-text">
+          <div class="nexo-name">NEX<span>O</span></div>
+          <div class="nexo-tagline">Red de Confianza</div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="#como">Cómo Funciona</a>
+        <a href="#niveles">Niveles</a>
+        <a href="#mono">Modelo</a>
+        <a href="#brand">Identidad</a>
+        <a href="#inversores">Inversores</a>
+      </div>
+      <button class="nav-cta" onclick="goTo('#inversores')">Sumate al Proyecto</button>
+      <div class="hamburger" id="burger" onclick="openMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobmenu">
+  <div class="mob-close" onclick="closeMenu()">✕</div>
+  <a href="#como"       onclick="closeMenu()">Cómo Funciona</a>
+  <a href="#niveles"    onclick="closeMenu()">Niveles</a>
+  <a href="#mono"       onclick="closeMenu()">Modelo</a>
+  <a href="#brand"      onclick="closeMenu()">Identidad</a>
+  <a href="#inversores" onclick="closeMenu()">Inversores</a>
+</div>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-content">
+
+      <div class="hero-left">
+        <div class="hero-eyebrow">Plataforma de confianza en red</div>
+        <h1 class="hero-h1">
+          No entrás<br>porque <em>pagaste.</em>
+          <strong>Entrás porque<br>alguien te avala.</strong>
+        </h1>
+        <div class="hero-rule"></div>
+        <p class="hero-desc">
+          Nexo es una plataforma de <strong>compra, venta, servicios y asesoramiento</strong>
+          donde cada transacción ocurre dentro de una red de personas que se conocen
+          y se respaldan. No hay bots, ni reviews falsos.
+          Solo <strong>cadenas de confianza humanas y verificadas.</strong>
+        </p>
+        <div class="hero-btns">
+          <button class="btn-dark" onclick="goTo('#inversores')">Quiero Participar</button>
+          <button class="btn-gold-outline" onclick="goTo('#como')">Cómo Funciona</button>
+        </div>
+      </div>
+
+      <!-- HERO NETWORK ILLUSTRATION -->
+      <div class="hero-right">
+        <svg viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="hglow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#c9963a" stop-opacity=".15"/>
+              <stop offset="100%" stop-color="#c9963a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- orbit rings -->
+          <circle cx="230" cy="230" r="180" fill="none" stroke="rgba(201,150,58,0.06)" stroke-width="1.5"/>
+          <circle cx="230" cy="230" r="126" fill="none" stroke="rgba(201,150,58,0.09)" stroke-width="1"/>
+          <circle cx="230" cy="230" r="72"  fill="none" stroke="rgba(201,150,58,0.12)" stroke-width="1"/>
+          <!-- L3 leaves -->
+          <line x1="148" y1="58" x2="166" y2="128" stroke="rgba(168,137,106,0.2)" stroke-width="1.3" class="e-flow"/>
+          <circle cx="148" cy="58" r="8" fill="#c8896a" opacity=".55"/>
+          <line x1="326" y1="56" x2="302" y2="126" stroke="rgba(168,137,106,0.2)" stroke-width="1.3" class="e-flow" style="animation-delay:.4s"/>
+          <circle cx="326" cy="56" r="8" fill="#c8896a" opacity=".55"/>
+          <line x1="55"  cy1="264" x2="55" y2="264" stroke="none"/>
+          <line x1="56"  y1="264" x2="120" y2="242" stroke="rgba(168,137,106,0.2)" stroke-width="1.3" class="e-flow" style="animation-delay:.7s"/>
+          <circle cx="56" cy="264" r="8" fill="#c8896a" opacity=".55"/>
+          <line x1="404" y1="260" x2="342" y2="241" stroke="rgba(168,137,106,0.2)" stroke-width="1.3" class="e-flow" style="animation-delay:1s"/>
+          <circle cx="404" cy="260" r="8" fill="#c8896a" opacity=".55"/>
+          <line x1="170" y1="405" x2="190" y2="338" stroke="rgba(168,137,106,0.2)" stroke-width="1.3" class="e-flow" style="animation-delay:1.3s"/>
+          <circle cx="170" cy="405" r="8" fill="#c8896a" opacity=".55"/>
+          <line x1="330" y1="403" x2="306" y2="337" stroke="rgba(168,137,106,0.2)" stroke-width="1.3" class="e-flow" style="animation-delay:1.6s"/>
+          <circle cx="330" cy="403" r="8" fill="#c8896a" opacity=".55"/>
+          <!-- L2 mid -->
+          <line x1="166" y1="128" x2="206" y2="202" stroke="rgba(138,148,166,0.3)" stroke-width="1.6" class="e-flow" style="animation-delay:.2s"/>
+          <circle cx="166" cy="128" r="13" fill="#a8b4c8" opacity=".82"/>
+          <line x1="302" y1="126" x2="260" y2="200" stroke="rgba(138,148,166,0.3)" stroke-width="1.6" class="e-flow" style="animation-delay:.5s"/>
+          <circle cx="302" cy="126" r="13" fill="#a8b4c8" opacity=".82"/>
+          <line x1="120" y1="242" x2="198" y2="234" stroke="rgba(138,148,166,0.3)" stroke-width="1.6" class="e-flow" style="animation-delay:.8s"/>
+          <circle cx="120" cy="242" r="13" fill="#a8b4c8" opacity=".82"/>
+          <line x1="342" y1="241" x2="264" y2="236" stroke="rgba(138,148,166,0.3)" stroke-width="1.6" class="e-flow" style="animation-delay:1.1s"/>
+          <circle cx="342" cy="241" r="13" fill="#a8b4c8" opacity=".82"/>
+          <line x1="190" y1="338" x2="210" y2="268" stroke="rgba(138,148,166,0.3)" stroke-width="1.6" class="e-flow" style="animation-delay:1.4s"/>
+          <circle cx="190" cy="338" r="13" fill="#a8b4c8" opacity=".82"/>
+          <line x1="306" y1="337" x2="258" y2="270" stroke="rgba(138,148,166,0.3)" stroke-width="1.6" class="e-flow" style="animation-delay:1.7s"/>
+          <circle cx="306" cy="337" r="13" fill="#a8b4c8" opacity=".82"/>
+          <!-- center pulse -->
+          <circle cx="230" cy="230" r="36" fill="url(#hglow)" class="halo"/>
+          <circle cx="230" cy="230" r="36" fill="url(#hglow)" class="halo" style="animation-delay:1.4s"/>
+          <circle cx="230" cy="230" r="26" fill="rgba(201,150,58,0.15)"/>
+          <circle cx="230" cy="230" r="21" fill="#c9963a"/>
+          <text x="230" y="236" text-anchor="middle" font-family="Cormorant,serif" font-size="17" font-weight="700" fill="#faf7f1">N</text>
+          <text x="230" y="270" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="600" letter-spacing="3" fill="rgba(201,150,58,0.6)">TU NEXO</text>
+          <!-- legend -->
+          <circle cx="34"  cy="432" r="5" fill="#c9963a"/>
+          <text x="44" y="436" font-size="10" fill="rgba(14,15,18,0.35)" font-family="DM Sans">Nivel 1</text>
+          <circle cx="95"  cy="432" r="5" fill="#a8b4c8"/>
+          <text x="105" y="436" font-size="10" fill="rgba(14,15,18,0.35)" font-family="DM Sans">Nivel 2</text>
+          <circle cx="156" cy="432" r="5" fill="#c8896a"/>
+          <text x="166" y="436" font-size="10" fill="rgba(14,15,18,0.35)" font-family="DM Sans">Nivel 3</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div style="border-top:1px solid var(--border);">
+    <div class="wrap">
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-n">3</div><div class="hstat-l">Niveles de confianza</div></div>
+        <div class="hstat"><div class="hstat-n">0</div><div class="hstat-l">Accesos sin referido</div></div>
+        <div class="hstat"><div class="hstat-n">∞</div><div class="hstat-l">Crecimiento orgánico</div></div>
+        <div class="hstat"><div class="hstat-n">100%</div><div class="hstat-l">Trazabilidad de origen</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CÓMO FUNCIONA ══════════ -->
+<section id="como" class="sec sec-light">
+  <div class="wrap">
+
+    <div class="como-intro reveal">
+      <div class="sec-label">Cómo Funciona</div>
+      <h2 class="disp">Un árbol que crece<br><em>desde adentro.</em></h2>
+      <p>Cada persona que entra fue <strong>avalada por alguien que ya está.</strong> Ese alguien tiene piel en el juego — su reputación está ligada a la tuya. No hay algoritmo. Hay personas reales que responden con nombre y apellido.</p>
+    </div>
+
+    <div class="como-layout">
+      <!-- Steps -->
+      <div class="steps reveal" style="padding-left:20px;">
+        <div class="step active" onclick="activateStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Recibís una invitación única</div>
+            <p class="step-desc">Alguien de tu confianza te genera un link firmado con su identidad. Expira en 72hs y lleva su ID como aval.</p>
+          </div>
+        </div>
+        <div class="step" onclick="activateStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Creás tu perfil y aparecés en la red</div>
+            <p class="step-desc">Tu nodo aparece en el árbol conectado a quien te invitó. Nivel 3 de entrada, acceso básico inmediato.</p>
+          </div>
+        </div>
+        <div class="step" onclick="activateStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Declarás info para subir de nivel</div>
+            <p class="step-desc">DNI, cuenta bancaria, historial — cada dato verificado sube tu score y desbloquea más funcionalidades.</p>
+          </div>
+        </div>
+        <div class="step" onclick="activateStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Elegís tus áreas de expertise</div>
+            <p class="step-desc">Empezás con cupos limitados. Por cada buena respuesta, tu cupo crece. Tu reputación se construye en vivo.</p>
+          </div>
+        </div>
+        <div class="step" onclick="activateStep(this)">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Invitás y expandís tu rama</div>
+            <p class="step-desc">Tu reputación está ligada a cómo actúan las personas que vos avalaste. Incentivo perfecto para invitar bien.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tree SVG panel -->
+      <div class="tree-panel reveal d2">
+        <svg id="tree-svg" viewBox="0 0 380 420" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="tglow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#c9963a" stop-opacity=".2"/>
+              <stop offset="100%" stop-color="#c9963a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- Edges -->
+          <path d="M190,52 C190,106 118,106 118,158" stroke="rgba(201,150,58,0.22)" stroke-width="1.5" fill="none" class="e-flow"/>
+          <path d="M190,52 C190,106 262,106 262,158" stroke="rgba(201,150,58,0.22)" stroke-width="1.5" fill="none" class="e-flow" style="animation-delay:.3s"/>
+          <path d="M118,158 C118,212 78,212 78,258" stroke="rgba(138,148,166,0.22)" stroke-width="1.3" fill="none" class="e-flow" style="animation-delay:.6s"/>
+          <path d="M118,158 C118,212 156,212 156,258" stroke="rgba(138,148,166,0.22)" stroke-width="1.3" fill="none" class="e-flow" style="animation-delay:.9s"/>
+          <path d="M262,158 C262,212 222,212 222,258" stroke="rgba(138,148,166,0.22)" stroke-width="1.3" fill="none" class="e-flow" style="animation-delay:.5s"/>
+          <path d="M262,158 C262,212 302,212 302,258" stroke="rgba(138,148,166,0.22)" stroke-width="1.3" fill="none" class="e-flow" style="animation-delay:.8s"/>
+          <path d="M78,258 C78,308 52,308 52,348" stroke="rgba(168,137,106,0.18)" stroke-width="1.2" fill="none" class="e-flow" style="animation-delay:1s"/>
+          <path d="M78,258 C78,308 100,308 100,348" stroke="rgba(168,137,106,0.18)" stroke-width="1.2" fill="none" class="e-flow" style="animation-delay:1.2s"/>
+          <path d="M302,258 C302,308 278,308 278,348" stroke="rgba(168,137,106,0.18)" stroke-width="1.2" fill="none" class="e-flow" style="animation-delay:1.1s"/>
+          <path d="M302,258 C302,308 324,308 324,348" stroke="rgba(168,137,106,0.18)" stroke-width="1.2" fill="none" class="e-flow" style="animation-delay:1.3s"/>
+          <!-- L1 root -->
+          <circle cx="190" cy="52" r="22" fill="url(#tglow)" class="halo" style="animation-duration:3s"/>
+          <circle cx="190" cy="52" r="18" fill="rgba(201,150,58,0.12)"/>
+          <circle cx="190" cy="52" r="14" fill="#c9963a"/>
+          <text x="190" y="57" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="700" fill="#faf7f1">VOS</text>
+          <!-- L2 -->
+          <circle cx="118" cy="158" r="13" fill="#a8b4c8"/>
+          <text x="118" y="162" text-anchor="middle" font-size="8" font-family="DM Sans" font-weight="600" fill="#fff">Carla</text>
+          <circle cx="262" cy="158" r="13" fill="#a8b4c8"/>
+          <text x="262" y="162" text-anchor="middle" font-size="8" font-family="DM Sans" font-weight="600" fill="#fff">Marcos</text>
+          <!-- L2b -->
+          <circle cx="78"  cy="258" r="11" fill="#a8b4c8" opacity=".8"/>
+          <circle cx="156" cy="258" r="11" fill="#a8b4c8" opacity=".8"/>
+          <circle cx="222" cy="258" r="11" fill="#a8b4c8" opacity=".8"/>
+          <circle cx="302" cy="258" r="11" fill="#a8b4c8" opacity=".8"/>
+          <!-- L3 -->
+          <circle cx="52"  cy="348" r="7" fill="#c8896a" opacity=".7"/>
+          <circle cx="100" cy="348" r="7" fill="#c8896a" opacity=".7"/>
+          <circle cx="278" cy="348" r="7" fill="#c8896a" opacity=".7"/>
+          <circle cx="324" cy="348" r="7" fill="#c8896a" opacity=".7"/>
+          <!-- caption -->
+          <text x="190" y="400" text-anchor="middle" font-size="10" fill="rgba(14,15,18,0.3)" font-family="DM Sans">Cada nodo = una persona avalada por otra</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- PILLARS -->
+    <div class="pillars-grid">
+      <div class="pillar reveal d1">
+        <span class="pillar-ico">🔗</span>
+        <div class="pillar-title">Cadena trazable</div>
+        <p class="pillar-text">Sabés exactamente quién avaló a quién y qué tan larga es la cadena. Transparencia total en el origen.</p>
+      </div>
+      <div class="pillar reveal d2">
+        <span class="pillar-ico">🎖️</span>
+        <div class="pillar-title">Niveles que se ganan</div>
+        <p class="pillar-text">El nivel de confianza sube con lo que declarás y verificás. No hay premium de pago — hay reputación real.</p>
+      </div>
+      <div class="pillar reveal d3">
+        <span class="pillar-ico">💬</span>
+        <div class="pillar-title">Expertos con cupos</div>
+        <p class="pillar-text">Cada experto tiene cupos que crecen con buenas respuestas. La escasez crea valor real, no artificial.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ NIVELES ══════════ -->
+<section id="niveles" class="sec sec-parchment">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sec-label">Sistema de Niveles</div>
+      <h2 class="disp" style="color:var(--ink)">La confianza se <em>gana,</em><strong style="color:var(--ink)">no se compra.</strong></h2>
+    </div>
+    <div class="niveles-grid">
+      <div class="nivel n1 reveal d1">
+        <div class="nivel-stripe"></div>
+        <div class="nivel-chip">◆ Nivel 1</div>
+        <div class="nivel-title">Confianza Plena</div>
+        <p class="nivel-desc">Acceso total. Transacciones de alto valor, asesoramiento premium y operaciones financieras sin restricciones.</p>
+        <div class="nivel-reqs">
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>DNI o Pasaporte verificado</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Cuenta bancaria vinculada</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Referenciado por usuario Nivel 1</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Historial activo ≥ 6 meses</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Reputación ≥ 4.8 / 5.0</div>
+        </div>
+      </div>
+      <div class="nivel n2 reveal d2">
+        <div class="nivel-stripe"></div>
+        <div class="nivel-chip">◇ Nivel 2</div>
+        <div class="nivel-title">Confianza Establecida</div>
+        <p class="nivel-desc">Acceso a la mayoría de secciones. Puede ofrecer servicios, vender y dar asesoramiento básico.</p>
+        <div class="nivel-reqs">
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Email y teléfono verificados</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Referenciado por cualquier usuario</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Al menos 3 transacciones exitosas</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Perfil completado ≥ 80%</div>
+        </div>
+      </div>
+      <div class="nivel n3 reveal d3">
+        <div class="nivel-stripe"></div>
+        <div class="nivel-chip">○ Nivel 3</div>
+        <div class="nivel-title">Nuevo Integrante</div>
+        <p class="nivel-desc">Acceso de exploración. Comprá en categorías básicas y explorá la red. El punto de partida de todos.</p>
+        <div class="nivel-reqs">
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Código de invitación válido</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Email verificado</div>
+          <div class="nivel-req"><span class="nivel-req-icon">✓</span>Perfil básico creado</div>
+        </div>
+      </div>
+    </div>
+    <div class="nivel-progression reveal">
+      <div class="prog-node">
+        <div class="prog-dot" style="background:#c8896a"></div>
+        <div class="prog-lbl">Nivel 3</div>
+      </div>
+      <div class="prog-arr">→</div>
+      <div class="prog-node">
+        <div class="prog-dot" style="background:#a8b4c8"></div>
+        <div class="prog-lbl">Nivel 2</div>
+      </div>
+      <div class="prog-arr">→</div>
+      <div class="prog-node">
+        <div class="prog-dot" style="background:#c9963a"></div>
+        <div class="prog-lbl">Nivel 1</div>
+      </div>
+      <p class="prog-hint">El nivel no se compra — se construye con verificación, historial y reputación.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CATEGORÍAS ══════════ -->
+<section id="cats" class="sec sec-light">
+  <div class="wrap">
+    <div class="cats-header">
+      <div class="reveal">
+        <div class="sec-label">Secciones</div>
+        <h2 class="disp">12 mundos.<br><em>Un criterio</em><strong>de entrada.</strong></h2>
+      </div>
+      <p class="reveal d1">Cada sección tiene expertos con <strong>cupos que crecen con buenas respuestas.</strong> No se compra visibilidad — se gana respondiendo bien. Los expertos arrancan con 5 cupos y suman de a 1 por cada respuesta valorada.</p>
+    </div>
+    <div class="cats-grid" id="cats-grid"></div>
+  </div>
+</section>
+
+<!-- ══════════ MONETIZACIÓN ══════════ -->
+<section id="mono" class="sec sec-ink" style="position:relative;">
+  <div class="mono-gfx"></div>
+  <div class="wrap" style="position:relative;z-index:1;">
+    <div class="reveal">
+      <div class="sec-label on-dark">Modelo de Negocio</div>
+      <h2 class="disp on-dark">El dinero fluye<br>con la <em>confianza.</em></h2>
+    </div>
+
+    <div class="mono-grid">
+      <div class="mono-card m1 reveal d1">
+        <div class="mono-card-stripe"></div>
+        <div class="mono-pct">45%</div>
+        <div class="mono-title">Comisiones de Transacción</div>
+        <p class="mono-desc">La fuente principal. Cada compra, venta y servicio genera un porcentaje para la plataforma.</p>
+        <div class="mono-items">
+          <div class="mono-item">3–7% en marketplace y clasificados</div>
+          <div class="mono-item">20% en consultas a expertos</div>
+          <div class="mono-item">Sin fee en Nivel 3 → incentivo a subir</div>
+          <div class="mono-item">Escrow integrado para seguridad</div>
+        </div>
+      </div>
+      <div class="mono-card m2 reveal d2">
+        <div class="mono-card-stripe"></div>
+        <div class="mono-pct">35%</div>
+        <div class="mono-title">Suscripciones Pro</div>
+        <p class="mono-desc">Expertos y vendedores que quieren más cupos, visibilidad y herramientas analíticas.</p>
+        <div class="mono-items">
+          <div class="mono-item">Plan Experto: cupos ilimitados + analytics</div>
+          <div class="mono-item">Plan Vendedor: listados destacados</div>
+          <div class="mono-item">Plan Empresa: acceso B2B a la red</div>
+          <div class="mono-item">Badge verificado en perfil</div>
+        </div>
+      </div>
+      <div class="mono-card m3 reveal d3">
+        <div class="mono-card-stripe"></div>
+        <div class="mono-pct">20%</div>
+        <div class="mono-title">Revenue Share de Red</div>
+        <p class="mono-desc">El motor viral. Los referidores ganan % de las operaciones de su sub-red, indefinidamente.</p>
+        <div class="mono-items">
+          <div class="mono-item">1.5% de operaciones de tu Nivel 1</div>
+          <div class="mono-item">0.5% de operaciones de tu Nivel 2</div>
+          <div class="mono-item">Incentivo permanente a invitar bien</div>
+          <div class="mono-item">Dashboard de red en tiempo real</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:8px;">
+      <p style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:14px;">Flujo de valor por actor</p>
+      <div class="swimlane">
+        <div class="swim-row">
+          <div class="swim-actor">Usuario nuevo</div>
+          <div class="swim-steps">
+            <div class="swim-step">Invitación única</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">Registro free</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step hi">Onboarding docs</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">Nodo activo</div>
+          </div>
+        </div>
+        <div class="swim-row">
+          <div class="swim-actor">Comprador</div>
+          <div class="swim-steps">
+            <div class="swim-step">Busca en su red</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">Compra / contrata</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step hi">Fee 3–7% → Nexo</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">Rating al vendedor</div>
+          </div>
+        </div>
+        <div class="swim-row">
+          <div class="swim-actor">Consultante</div>
+          <div class="swim-steps">
+            <div class="swim-step">Consulta al experto</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step hi">Paga consulta</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step hi">20% → Nexo</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">80% → Experto</div>
+          </div>
+        </div>
+        <div class="swim-row">
+          <div class="swim-actor">Experto</div>
+          <div class="swim-steps">
+            <div class="swim-step">Publica servicios</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step hi">Plan Pro (suscripción)</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">+cupos + alcance</div>
+          </div>
+        </div>
+        <div class="swim-row">
+          <div class="swim-actor">Referidor</div>
+          <div class="swim-steps">
+            <div class="swim-step">Invita alguien</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">Esa persona opera</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step hi">1.5% revenue share</div>
+            <div class="swim-arr">→</div>
+            <div class="swim-step">Efecto viral ∞</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BRAND KIT ══════════ -->
+<section id="brand" class="sec sec-parchment">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sec-label">Identidad Visual</div>
+      <h2 class="disp" style="color:var(--ink)"><em>Nexo</em> — Brand Kit</h2>
+    </div>
+
+    <!-- Logo tiles -->
+    <div class="logo-showcase reveal" style="margin-top:44px;">
+      <!-- Dark -->
+      <div class="logo-tile lt-dark">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="40" height="40" viewBox="0 0 38 38" fill="none">
+            <circle cx="19" cy="19" r="17" stroke="rgba(201,150,58,0.22)" stroke-width="1.2"/>
+            <path d="M19 2 A17 17 0 0 1 34.7 26" stroke="#c9963a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <circle cx="19" cy="4"  r="3.2" fill="#c9963a"/>
+            <circle cx="4"  cy="28" r="3.2" fill="#c9963a"/>
+            <circle cx="34" cy="28" r="3.2" fill="#c9963a"/>
+            <circle cx="19" cy="19" r="4.8" fill="#c9963a"/>
+            <line x1="19" y1="7.2" x2="19" y2="14.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+            <line x1="6.8" y1="25.6" x2="14.8" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+            <line x1="31.2" y1="25.6" x2="23.2" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          </svg>
+          <div>
+            <div style="font-family:'Cormorant',serif;font-size:1.8rem;font-weight:700;letter-spacing:.14em;color:#fff;">NEX<span style="color:#ddb055">O</span></div>
+            <div style="font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">Red de Confianza</div>
+          </div>
+        </div>
+        <div class="lt-cap">Fondo oscuro</div>
+      </div>
+      <!-- Light -->
+      <div class="logo-tile lt-white">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="40" height="40" viewBox="0 0 38 38" fill="none">
+            <circle cx="19" cy="19" r="17" stroke="rgba(201,150,58,0.3)" stroke-width="1.2"/>
+            <path d="M19 2 A17 17 0 0 1 34.7 26" stroke="#c9963a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <circle cx="19" cy="4"  r="3.2" fill="#c9963a"/>
+            <circle cx="4"  cy="28" r="3.2" fill="#c9963a"/>
+            <circle cx="34" cy="28" r="3.2" fill="#c9963a"/>
+            <circle cx="19" cy="19" r="4.8" fill="#c9963a"/>
+            <line x1="19" y1="7.2" x2="19" y2="14.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+            <line x1="6.8" y1="25.6" x2="14.8" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+            <line x1="31.2" y1="25.6" x2="23.2" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          </svg>
+          <div>
+            <div style="font-family:'Cormorant',serif;font-size:1.8rem;font-weight:700;letter-spacing:.14em;color:var(--ink);">NEX<span style="color:var(--gold)">O</span></div>
+            <div style="font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--mutedlight);margin-top:2px;">Red de Confianza</div>
+          </div>
+        </div>
+        <div class="lt-cap">Fondo claro</div>
+      </div>
+      <!-- Gold -->
+      <div class="logo-tile lt-gold">
+        <svg width="58" height="58" viewBox="0 0 38 38" fill="none">
+          <circle cx="19" cy="19" r="17" stroke="rgba(14,15,18,.18)" stroke-width="1.2"/>
+          <path d="M19 2 A17 17 0 0 1 34.7 26" stroke="rgba(14,15,18,.5)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <circle cx="19" cy="4"  r="3.2" fill="var(--ink)"/>
+          <circle cx="4"  cy="28" r="3.2" fill="var(--ink)"/>
+          <circle cx="34" cy="28" r="3.2" fill="var(--ink)"/>
+          <circle cx="19" cy="19" r="4.8" fill="var(--ink)"/>
+          <line x1="19" y1="7.2" x2="19" y2="14.2" stroke="var(--ink)" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          <line x1="6.8" y1="25.6" x2="14.8" y2="21.2" stroke="var(--ink)" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          <line x1="31.2" y1="25.6" x2="23.2" y2="21.2" stroke="var(--ink)" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+        </svg>
+        <div class="lt-cap">Ícono sobre dorado</div>
+      </div>
+    </div>
+
+    <!-- Symbol anatomy -->
+    <div class="anatomy-box reveal">
+      <svg width="72" height="72" viewBox="0 0 38 38" fill="none" style="flex-shrink:0;">
+        <circle cx="19" cy="19" r="17" stroke="rgba(201,150,58,0.3)" stroke-width="1.5"/>
+        <path d="M19 2 A17 17 0 0 1 34.7 26" stroke="#c9963a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="19" cy="4"  r="4" fill="rgba(201,150,58,.15)" stroke="#c9963a" stroke-width="1.2"/>
+        <circle cx="19" cy="4"  r="2.2" fill="#c9963a"/>
+        <circle cx="4"  cy="28" r="4" fill="rgba(201,150,58,.15)" stroke="#c9963a" stroke-width="1.2"/>
+        <circle cx="4"  cy="28" r="2.2" fill="#c9963a"/>
+        <circle cx="34" cy="28" r="4" fill="rgba(201,150,58,.15)" stroke="#c9963a" stroke-width="1.2"/>
+        <circle cx="34" cy="28" r="2.2" fill="#c9963a"/>
+        <circle cx="19" cy="19" r="5.5" fill="rgba(201,150,58,.12)" stroke="#c9963a" stroke-width="1.5"/>
+        <circle cx="19" cy="19" r="3" fill="#c9963a"/>
+        <line x1="19" y1="8.2" x2="19" y2="13.5" stroke="#c9963a" stroke-width="1.3" stroke-dasharray="1.8 2.2"/>
+        <line x1="7.2" y1="25.6" x2="13.8" y2="21.8" stroke="#c9963a" stroke-width="1.3" stroke-dasharray="1.8 2.2"/>
+        <line x1="30.8" y1="25.6" x2="24.2" y2="21.8" stroke="#c9963a" stroke-width="1.3" stroke-dasharray="1.8 2.2"/>
+      </svg>
+      <div class="anatomy-items">
+        <div class="anatomy-item"><strong>Nodo central</strong> — Vos, al centro de tu propia red de confianza</div>
+        <div class="anatomy-item"><strong>3 nodos externos</strong> — Las tres ramas primarias de confianza directa</div>
+        <div class="anatomy-item"><strong>Líneas punteadas</strong> — Vínculos verificados, no ciegos ni automáticos</div>
+        <div class="anatomy-item"><strong>Arco exterior</strong> — La cadena que sigue creciendo hacia afuera</div>
+      </div>
+    </div>
+
+    <!-- Palette -->
+    <p style="font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;" class="reveal">Paleta de Color</p>
+    <div class="palette reveal">
+      <div class="swatch"><div class="swatch-color" style="background:#c9963a"></div><div class="swatch-info"><div class="swatch-name">Gold</div><div class="swatch-hex">#C9963A</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#ddb055"></div><div class="swatch-info"><div class="swatch-name">Gold Light</div><div class="swatch-hex">#DDB055</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#f7ecd4"></div><div class="swatch-info"><div class="swatch-name">Gold Pale</div><div class="swatch-hex">#F7ECD4</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0e0f12"></div><div class="swatch-info"><div class="swatch-name">Ink</div><div class="swatch-hex">#0E0F12</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#f2ece0"></div><div class="swatch-info"><div class="swatch-name">Parchment</div><div class="swatch-hex">#F2ECE0</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#a85c28"></div><div class="swatch-info"><div class="swatch-name">Copper</div><div class="swatch-hex">#A85C28</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#8a94a6"></div><div class="swatch-info"><div class="swatch-name">Silver</div><div class="swatch-hex">#8A94A6</div></div></div>
+    </div>
+
+    <!-- Typography -->
+    <p style="font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;" class="reveal">Tipografía</p>
+    <div class="type-duo reveal">
+      <div class="type-card">
+        <div class="type-sample">Cormorant<br><em>Display</em></div>
+        <p class="type-body-sample">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz</p>
+        <div class="type-meta">Display · Titulares · Cormorant 300 & 700</div>
+      </div>
+      <div class="type-card">
+        <div class="type-sample sans">DM Sans<br><strong style="font-weight:600;">Interface</strong></div>
+        <p class="type-body-sample">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz</p>
+        <div class="type-meta">Cuerpo & UI · DM Sans 300 / 400 / 600</div>
+      </div>
+    </div>
+
+    <!-- Tone of voice -->
+    <p style="font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;" class="reveal">Tono de Voz</p>
+    <div class="tone-grid reveal">
+      <div class="tone-card"><div class="tone-word">Íntimo</div><div class="tone-not">no <span>masivo</span></div></div>
+      <div class="tone-card"><div class="tone-word">Directo</div><div class="tone-not">no <span>corporativo</span></div></div>
+      <div class="tone-card"><div class="tone-word">Exclusivo</div><div class="tone-not">no <span>elitista</span></div></div>
+      <div class="tone-card"><div class="tone-word">Honesto</div><div class="tone-not">no <span>hype</span></div></div>
+    </div>
+
+    <!-- Taglines -->
+    <p style="font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;" class="reveal">Taglines</p>
+    <div class="taglines-box reveal">
+      <div class="tagline-item">"El mercado al que <em>no todos</em> pueden entrar."</div>
+      <div class="tagline-item">"Comprá, vendé, asesorate — dentro de <em>tu red.</em>"</div>
+      <div class="tagline-item">"Tu red no es un follower count. <em>Es confianza real.</em>"</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA INVERSORES ══════════ -->
+<section id="inversores" class="sec" style="background:var(--cream);padding:120px 0;">
+  <div class="wrap">
+    <div class="inv-wrap">
+      <div class="inv-stage reveal">Etapa Pre-Seed · Buscamos Co-founders & Inversores</div>
+      <h2 class="inv-h2 reveal">Estamos construyendo.<br><em>¿Te sumás?</em></h2>
+      <p class="inv-desc reveal">
+        Nexo es una idea con <strong>modelo definido, identidad clara y roadmap concreto.</strong>
+        Buscamos personas que quieran acompañar el proceso desde el inicio —
+        como inversores seed, como co-fundadores técnicos,
+        o como primeros usuarios que ayuden a definir el producto.
+      </p>
+      <div class="inv-cards reveal">
+        <div class="inv-card">
+          <span class="inv-card-ico">💰</span>
+          <div class="inv-card-title">Inversores Seed</div>
+          <p class="inv-card-desc">Capital inicial para MVP, infraestructura y primeros 500 usuarios. Equity a conversar.</p>
+        </div>
+        <div class="inv-card">
+          <span class="inv-card-ico">👨‍💻</span>
+          <div class="inv-card-title">Co-Founders Técnicos</div>
+          <p class="inv-card-desc">Full-stack, mobile o diseño de producto. Participación en equity desde el día 0.</p>
+        </div>
+        <div class="inv-card">
+          <span class="inv-card-ico">🌱</span>
+          <div class="inv-card-title">Early Adopters</div>
+          <p class="inv-card-desc">Los primeros 100 usuarios que co-diseñen el producto. Acceso Nivel 1 garantizado.</p>
+        </div>
+      </div>
+      <div class="inv-btns reveal">
+        <button class="btn-dark">Quiero saber más</button>
+        <button class="btn-gold-outline">Descargar Pitch Deck</button>
+      </div>
+      <p class="inv-note reveal">Prototipo conceptual · Pre-seed · 2025</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div class="nexo-logo">
+        <svg style="width:26px;height:26px;" viewBox="0 0 38 38" fill="none">
+          <circle cx="19" cy="19" r="17" stroke="rgba(201,150,58,0.22)" stroke-width="1.2"/>
+          <path d="M19 2 A17 17 0 0 1 34.7 26" stroke="#c9963a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <circle cx="19" cy="4" r="3.2" fill="#c9963a"/>
+          <circle cx="4" cy="28" r="3.2" fill="#c9963a"/>
+          <circle cx="34" cy="28" r="3.2" fill="#c9963a"/>
+          <circle cx="19" cy="19" r="4.8" fill="#c9963a"/>
+          <line x1="19" y1="7.2" x2="19" y2="14.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          <line x1="6.8" y1="25.6" x2="14.8" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+          <line x1="31.2" y1="25.6" x2="23.2" y2="21.2" stroke="#c9963a" stroke-width="1.1" stroke-dasharray="1.8 2.2"/>
+        </svg>
+        <div class="nexo-text">
+          <div class="nexo-name" style="font-size:1.1rem;color:rgba(255,255,255,.7);">NEX<span>O</span></div>
+        </div>
+      </div>
+      <p class="footer-note"><strong style="color:rgba(255,255,255,.35);">Nexo — Red de Confianza</strong> · Prototipo conceptual · Todos los derechos reservados · 2025</p>
+      <div class="footer-links">
+        <a href="#como">Concepto</a>
+        <a href="#mono">Modelo</a>
+        <a href="#inversores">Contacto</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── NAVBAR SCROLL ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+/* ── MOBILE MENU ── */
+function openMenu()  { document.getElementById('mobmenu').classList.add('open'); }
+function closeMenu() { document.getElementById('mobmenu').classList.remove('open'); }
+
+/* ── SMOOTH SCROLL ── */
+function goTo(sel) {
+  document.querySelector(sel)?.scrollIntoView({ behavior:'smooth' });
+}
+
+/* ── REVEAL ON SCROLL ── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ── STEP INTERACTION ── */
+function activateStep(el) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── CATEGORIES ── */
+const catsData = [
+  { ico:'💰', name:'Inversiones',  n:'14 expertos', fill:72 },
+  { ico:'🏦', name:'Bancos',       n:'9 expertos',  fill:55 },
+  { ico:'✈️', name:'Viajes',       n:'22 expertos', fill:85 },
+  { ico:'📚', name:'Educación',    n:'17 expertos', fill:63 },
+  { ico:'✨', name:'Skincare',     n:'11 expertos', fill:40 },
+  { ico:'💃', name:'Estilismo',    n:'8 expertos',  fill:30 },
+  { ico:'₿',  name:'Cripto',       n:'16 expertos', fill:78 },
+  { ico:'🍽️', name:'Gastronomía', n:'12 expertos', fill:48 },
+  { ico:'🚗', name:'Autos',        n:'7 expertos',  fill:25 },
+  { ico:'🎨', name:'Arte & Diseño',n:'6 expertos',  fill:22 },
+  { ico:'💪', name:'Salud & Fit',  n:'19 expertos', fill:91 },
+  { ico:'💻', name:'Tecnología',   n:'24 expertos', fill:95 },
+];
+const catGrid = document.getElementById('cats-grid');
+catsData.forEach(c => {
+  const d = document.createElement('div');
+  d.className = 'cat-card reveal';
+  d.innerHTML = `<span class="cat-ico">${c.ico}</span><div class="cat-name">${c.name}</div><div class="cat-n">${c.n}</div><div class="cat-bar"><div class="cat-fill" data-w="${c.fill}" style="width:0%"></div></div>`;
+  d.onclick = () => d.classList.toggle('picked');
+  catGrid.appendChild(d);
+  revealObs.observe(d);
+});
+// animate bars on enter
+new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.cat-fill').forEach(b => b.style.width = b.dataset.w + '%');
+    }
+  });
+}, { threshold: 0.3 }).observe(catGrid);
+</script>
+</body>
+</html>
